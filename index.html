@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#e8eaeb" />
+    <meta
+      name="description"
+      content="Личный календарь для планирования задач на день, неделю и месяц."
+    />
+    <title>Планировщик задач</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Навигация по календарю">
+        <a class="brand" href="#top" aria-label="Планировщик задач — на главную">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <rect x="4" y="5" width="24" height="23" rx="7" fill="currentColor" />
+              <path d="M10 3.5v5M22 3.5v5M9.5 13h13M10 18h4M10 22h8" stroke="#fffdfa" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span class="brand-copy">
+            <strong>Планировщик</strong>
+            <span>личное пространство</span>
+          </span>
+        </a>
+
+        <div class="sidebar-label">КАЛЕНДАРЬ</div>
+        <nav class="view-nav" aria-label="Вид календаря">
+          <button class="view-link" type="button" data-view="day">
+            <span class="view-icon" aria-hidden="true">▤</span>
+            <span>День</span>
+          </button>
+          <button class="view-link is-active" type="button" data-view="week" aria-current="page">
+            <span class="view-icon view-icon-week" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span>Неделя</span>
+          </button>
+          <button class="view-link" type="button" data-view="month">
+            <span class="view-icon" aria-hidden="true">▦</span>
+            <span>Месяц</span>
+          </button>
+        </nav>
+
+        <section class="task-filters" id="taskFilters" aria-label="Фильтры задач">
+          <div class="filter-group">
+            <h2 class="filter-heading">Приоритет</h2>
+            <div class="filter-options" role="group" aria-label="Фильтр по приоритету">
+              <button class="filter-chip" type="button" data-filter-type="priority" data-filter-value="all">Все</button>
+              <button class="filter-chip priority-low" type="button" data-filter-type="priority" data-filter-value="low">Низкий</button>
+              <button class="filter-chip priority-normal" type="button" data-filter-type="priority" data-filter-value="normal">Обычный</button>
+              <button class="filter-chip priority-high" type="button" data-filter-type="priority" data-filter-value="high">Высокий</button>
+              <button class="filter-chip priority-urgent" type="button" data-filter-type="priority" data-filter-value="urgent">Срочный</button>
+            </div>
+          </div>
+          <div class="filter-group">
+            <h2 class="filter-heading">Статус</h2>
+            <div class="filter-options" role="group" aria-label="Фильтр по статусу" data-filter-group="status">
+              <button class="filter-chip" type="button" data-filter-type="status" data-filter-value="all">Все</button>
+              <button class="filter-chip status-planned" type="button" data-filter-type="status" data-filter-value="planned">Запланировано</button>
+              <button class="filter-chip status-in-progress" type="button" data-filter-type="status" data-filter-value="in-progress">В процессе</button>
+              <button class="filter-chip status-completed" type="button" data-filter-type="status" data-filter-value="completed">Выполнено</button>
+              <button class="filter-chip status-postponed" type="button" data-filter-type="status" data-filter-value="postponed">Отложено</button>
+              <button class="filter-chip status-rescheduled" type="button" data-filter-type="status" data-filter-value="rescheduled">Перенесено</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="backup-actions" aria-labelledby="backupHeading">
+          <h2 class="filter-heading" id="backupHeading">Резервная копия</h2>
+          <button class="backup-button" id="exportBackup" type="button" aria-label="Экспортировать резервную копию в JSON">Экспорт JSON</button>
+          <button class="backup-button" id="chooseBackup" type="button" aria-label="Импортировать резервную копию из JSON">Импорт JSON</button>
+          <input class="visually-hidden" id="backupFile" type="file" accept="application/json,.json" tabindex="-1" aria-hidden="true" />
+        </section>
+
+        <div class="sidebar-bottom">
+          <span class="sidebar-orbit" aria-hidden="true"></span>
+          <div>
+            <strong>Спокойный ритм</strong>
+            <span>одна задача за раз</span>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main-content" id="top">
+        <header class="page-header">
+          <div class="page-heading">
+            <p class="eyebrow" id="viewEyebrow">ВАШ ПЛАН</p>
+            <h1 id="periodTitle" aria-live="polite"></h1>
+          </div>
+          <div class="date-controls" aria-label="Навигация по датам">
+            <button class="icon-button" id="previousPeriod" type="button" aria-label="Предыдущая неделя" title="Предыдущая неделя">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m12.5 4.5-5 5.5 5 5.5" /></svg>
+            </button>
+            <button class="today-button" id="goToday" type="button">Сегодня</button>
+            <button class="icon-button" id="nextPeriod" type="button" aria-label="Следующая неделя" title="Следующая неделя">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m7.5 4.5 5 5.5-5 5.5" /></svg>
+            </button>
+            <button class="add-task-button" id="addTask" type="button"><span aria-hidden="true">＋</span> Новая задача</button>
+          </div>
+        </header>
+
+        <section class="calendar-panel" aria-label="Календарь">
+          <div class="calendar-scroll" id="calendarScroll">
+            <div id="calendarRoot"></div>
+          </div>
+        </section>
+
+        <footer class="page-footer">
+          <span class="footer-dot" aria-hidden="true"></span>
+          <span id="footerCaption">Планируйте в удобном для вас ритме</span>
+        </footer>
+      </main>
+    </div>
+
+    <dialog class="task-dialog" id="taskDialog" aria-labelledby="taskDialogTitle">
+      <form class="task-form" id="taskForm">
+        <header class="dialog-header">
+          <div>
+            <p class="eyebrow">ВАШ ПЛАН</p>
+            <h2 id="taskDialogTitle">Новая задача</h2>
+          </div>
+          <button class="icon-button dialog-close" id="closeTaskDialog" type="button" aria-label="Закрыть окно">×</button>
+        </header>
+
+        <label class="field field-wide">
+          <span>Название задачи</span>
+          <input id="taskTitle" name="title" type="text" maxlength="120" placeholder="Например, позвонить врачу" required autocomplete="off" />
+        </label>
+
+        <label class="field field-wide">
+          <span>Дата</span>
+          <input id="taskDate" name="date" type="date" required />
+        </label>
+
+        <div class="field-row">
+          <label class="field">
+            <span>Начало</span>
+            <select id="taskStart" name="startTime" required></select>
+          </label>
+          <label class="field">
+            <span>Окончание</span>
+            <select id="taskEnd" name="endTime" required></select>
+          </label>
+        </div>
+
+        <div class="field-row">
+          <label class="field">
+            <span>Приоритет</span>
+            <select id="taskPriority" name="priority">
+              <option value="low">Низкий</option>
+              <option value="normal" selected>Обычный</option>
+              <option value="high">Высокий</option>
+              <option value="urgent">Срочный</option>
+            </select>
+          </label>
+          <label class="field">
+            <span>Статус</span>
+            <select id="taskStatus" name="status">
+              <option value="planned" selected>Запланировано</option>
+              <option value="in-progress">В процессе</option>
+              <option value="completed">Выполнено</option>
+              <option value="postponed">Отложено</option>
+              <option value="rescheduled">Перенесено</option>
+            </select>
+          </label>
+        </div>
+
+        <label class="field field-wide">
+          <span>Заметка <small>необязательно</small></span>
+          <textarea id="taskNote" name="note" rows="3" maxlength="1000" placeholder="Дополнительные детали"></textarea>
+        </label>
+
+        <p class="form-error" id="taskFormError" role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button class="delete-task-button" id="deleteTask" type="button" hidden>Удалить</button>
+          <button class="cancel-button" id="cancelTask" type="button">Отмена</button>
+          <button class="save-button" type="submit">Сохранить задачу</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="task-dialog delete-confirm-dialog" id="deleteConfirmDialog" aria-labelledby="deleteConfirmTitle">
+      <section class="delete-confirm-content">
+        <p class="eyebrow">ПОДТВЕРЖДЕНИЕ</p>
+        <h2 id="deleteConfirmTitle">Удалить задачу?</h2>
+        <p>Задача будет удалена из календаря. Это действие нельзя отменить.</p>
+        <div class="dialog-actions">
+          <button class="cancel-button" id="cancelDeleteTask" type="button">Отмена</button>
+          <button class="confirm-delete-button" id="confirmDeleteTask" type="button">Я подтверждаю</button>
+        </div>
+      </section>
+    </dialog>
+
+    <dialog class="task-dialog backup-confirm-dialog" id="backupConfirmDialog" aria-labelledby="backupConfirmTitle">
+      <section class="delete-confirm-content">
+        <p class="eyebrow">ИМПОРТ РЕЗЕРВНОЙ КОПИИ</p>
+        <h2 id="backupConfirmTitle">Заменить текущие задачи?</h2>
+        <p id="backupConfirmText">Текущий список задач будет заменён данными из выбранного файла.</p>
+        <div class="dialog-actions">
+          <button class="cancel-button" id="cancelBackupImport" type="button">Отмена</button>
+          <button class="confirm-backup-button" id="confirmBackupImport" type="button">Импортировать и заменить</button>
+        </div>
+      </section>
+    </dialog>
+  </body>
+</html>
